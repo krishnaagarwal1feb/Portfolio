@@ -50,7 +50,7 @@
     loader.load('AnimatedXBotTaunt.glb', handle_load);
 
     var mesh;
-
+    var mixer;
     function handle_load(gltf) {
 
         console.log(gltf);
@@ -59,6 +59,10 @@
         mesh.children[0].material = new THREE.MeshLambertMaterial();
 		scene.add( mesh );
         mesh.position.z = -10;
+
+        mixer = new THREE.AnimatorMixer(mesh);
+        var clip = THREE.AnimationClip.CreateFromMorphTargetSequence('Taunt',geometry.morphTargets,30);
+        mixer.clipAction(clip).setDuration(1).play();
     }
 
 
@@ -75,7 +79,12 @@
         if (mesh) {
         
             mesh.rotation.y += 0.01;
-
+            if(mixer)
+				{
+					var time = Date.now();
+					mixer.update((time-prevTime)*0.001);
+					prevTime = time;
+				}
             //animation mesh
             // mesh.morphTargetInfluences[ 0 ] = Math.sin(delta) * 20.0;
         }
