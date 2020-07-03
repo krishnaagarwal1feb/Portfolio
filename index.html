@@ -60,7 +60,7 @@
 		scene.add( mesh );
         mesh.position.z = -10;
 
-        mixer = new THREE.AnimatorMixer(mesh);
+        mixer = new THREE.AnimatonMixer(mesh);
         var clip = THREE.AnimationClip.CreateFromMorphTargetSequence('Taunt',geometry.morphTargets,30);
         mixer.clipAction(clip).setDuration(1).play();
     }
