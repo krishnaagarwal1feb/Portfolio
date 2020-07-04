@@ -16,104 +16,94 @@
     <script src="three.js"></script>
     <script src="GLTFLoader.js"></script>
 
-    <script type = "module">    
+    <script>
 
-    var scene,renderer,camera,stats;
-    var model,skeleton,mixer,clock;
+    var scene, renderer, camera, stats;
+    var model, skeleton,mixer,clock;
+    var	myCanvas = document.getElementById('myCanvas');
 
-    var idleAction;
     var tauntAction;
-    var actions;
+    var tauntWeight;
+    var actions, settings;  
 
-    init();
+    //RENDERER
+    renderer = new THREE.WebGLRenderer({
+      canvas: myCanvas, 
+      antialias: true
+    });
+    renderer.setClearColor(0x000000);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-    function init() 
+    //CAMERA
+    camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
+    //SCENE
+    scene = new THREE.Scene();
+
+    //LIGHTS
+    var light = new THREE.AmbientLight(0xffffff, 0.5);
+    scene.add(light);
+
+    var light2 = new THREE.PointLight(0xffffff, 0.5);
+    scene.add(light2);
+  
+
+    //Adding a plane to the scene
+
+    var plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 100, 100 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
+    plane.rotation.x  = Math.PI/2;
+    plane.receiveShadow = true;
+    scene.add(plane);
+
+    //Initialising GLTF Loader
+    var loader = new THREE.GLTFLoader(); 
+
+  //  loader.load('AnimatedXBotTaunt.glb', handle_load);
+ 
+    loader.load('AnimatedXBotTaunt.glb', function ( gltf ) 
     {
-    
-        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 1000 );
-        camera.position.set( 1, 2, - 3 );
-        camera.lookAt( 0, 1, 0 );
+        model = gltf.scene;
+        scene.add( model );
+        model.traverse( function ( object ) {
 
-        clock = new THREE.Clock();
-
-        scene = new THREE.Scene();
-        scene.background = new THREE.Color( 0xa0a0a0 );
-
-
-
-        var loader = new THREE.GLTFLoader();
-        loader.load( 'AnimatedXBotTaunt.glb', function ( gltf ) {
-
-            model = gltf.scene;
-            scene.add( model );
-            console.log("Model loaded = ");
-            console.log(gltf);
-            model.traverse( function ( object ) {
-
-                if ( object.isMesh ) object.castShadow = true;
-
-            } );
-
-            //
-
-            skeleton = new THREE.SkeletonHelper( model );
-            skeleton.visible = false;
-            scene.add( skeleton );
-            console.log("Skeleton loaded");
-            console.log(skeleton);
-
-            //
-
-
-
-            //
-
-            var animations = gltf.animations;
-
-            mixer = new THREE.AnimationMixer( model );
-
-            tauntAction = mixer.clipAction( animations[ 0 ] );
-            console.log(tauntAction);
-            console.log("Update to latest");
-            actions = [ tauntAction ];
-
-            activateAllActions();
-
-            animate();
+            if ( object.isMesh ) object.castShadow = true;
 
         } );
-        }
-        function activateAllActions() {
 
+        skeleton = new THREE.SkeletonHelper( model );
+        skeleton.visible = false;
+        scene.add( skeleton );
+
+     //   createPanel();
+
+        var animations = gltf.animations;
+        mixer = new THREE.AnimationMixer( model );
+        tauntAction = mixer.clipAction( animations[ 0 ] );
+
+        actions = [ tauntAction ];
+        activateAllActions();
+        animate();
+    } );
+
+    function activateAllActions() 
+    {
         actions.forEach( function ( action ) {
 
             action.play();
 
         } );
+    }
 
-        }
+    function animate()
+    {
+        requestAnimationFrame(animate);
+        var mixerUpdateDelta = clock.getDelta();
+        var mixerUpdateDelta = clock.getDelta();
+        renderer.render( scene, camera );
 
+    }
 
-        function animate() {
-
-				// Render loop
-
-				requestAnimationFrame( animate );
-
-				updateCrossFadeControls();
-
-				var mixerUpdateDelta = clock.getDelta();
-
-
-				mixer.update( mixerUpdateDelta );
-
-				renderer.render( scene, camera );
-
-			}
-
-
-			
-				
     </script>
 </body>
 </html>
