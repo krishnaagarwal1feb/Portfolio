@@ -18,13 +18,10 @@
 
     <script>
 
-    var scene, renderer, camera, stats;
-    var model, skeleton,mixer,clock;
-    var	myCanvas = document.getElementById('myCanvas');
-
-    var tauntAction;
-    var tauntWeight;
-    var actions, settings;  
+    var renderer,
+    	scene,
+    	camera,
+    	myCanvas = document.getElementById('myCanvas');
 
     //RENDERER
     renderer = new THREE.WebGLRenderer({
@@ -48,63 +45,65 @@
     var light2 = new THREE.PointLight(0xffffff, 0.5);
     scene.add(light2);
   
+    var loader = new THREE.GLTFLoader();
 
-    //Adding a plane to the scene
+    loader.load('newtest.glb', handle_load);
 
-    var plane = new THREE.Mesh( new THREE.PlaneBufferGeometry( 100, 100 ), new THREE.MeshPhongMaterial( { color: 0x999999, depthWrite: false } ) );
-    plane.rotation.x  = Math.PI/2;
-    plane.receiveShadow = true;
-    scene.add(plane);
+    var model;
 
-    //Initialising GLTF Loader
-    var loader = new THREE.GLTFLoader(); 
+    var mixer;
+    var actions;
+    var action;
+    
+    var animations;
+    var idleAction, bowAction, tauntAction, waveAction;
 
-  //  loader.load('AnimatedXBotTaunt.glb', handle_load);
- 
-    loader.load('AnimatedXBotTaunt.glb', function ( gltf ) 
-    {
+    function handle_load(gltf) {
+
+        console.log(gltf);
         model = gltf.scene;
-        scene.add( model );
-        model.traverse( function ( object ) {
+        model.children[0].material = new THREE.MeshLambertMaterial();
+		scene.add( model );
+        model.position.z = -10;
 
-            if ( object.isMesh ) object.castShadow = true;
+        console.log(gltf.animations);
+        mixer = new THREE.AnimationMixer(model);
+        animations = gltf.animations;
+        idleAction = animations[1];
+        bowAction = animations[0];
+        tauntAction = animations[2];
+        waveAction = animations[3];
 
-        } );
-
-        skeleton = new THREE.SkeletonHelper( model );
-        skeleton.visible = false;
-        scene.add( skeleton );
-
-     //   createPanel();
-
-        var animations = gltf.animations;
-        mixer = new THREE.AnimationMixer( model );
-        tauntAction = mixer.clipAction( animations[ 0 ] );
-
-        actions = [ tauntAction ];
-        console.log("Model = " + model);
-        console.log("Skelton = " + skeleton);
-        console.log("Mixer = " + mixer);
-        activateAllActions();
-        animate();
-    } );
-
-    function activateAllActions() 
-    {
-        actions.forEach( function ( action ) {
-            console.log("Animation = " + action); 
-            action.play();
-
-        } );
+        actions = [idleAction, waveAction, bowAction, tauntAction];
     }
 
-    var prevTime = Date.now();
-    function animate()
+    document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+    function onDocumentMouseDown( event ) 
     {
-        var time = Date.now();
-        requestAnimationFrame(animate);
-        mixer.update( (time - prevTime)*0.001 );
-        renderer.render( scene, camera );
+        action = idleAction;
+        if ( action !== null ) 
+        {
+            console.log("Started playing = " + action);
+            action.stop();
+            action.play();
+        }
+    }
+    //RENDER LOOP
+    render();
+
+    var delta = 0;
+    var prevTime = Date.now();
+
+    function render() 
+    {
+        delta += 0.1;
+        if (model) 
+        {
+            model.rotation.y += 0.01;
+        }
+        renderer.render(scene, camera);
+        mixer.update(delta);
+    	requestAnimationFrame(render);
     }
 
     </script>
