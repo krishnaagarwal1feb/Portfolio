@@ -82,6 +82,9 @@
         tauntAction = mixer.clipAction( animations[ 0 ] );
 
         actions = [ tauntAction ];
+        console.log("Model = " + model);
+        console.log("Skelton = " + skeleton);
+        console.log("Mixer = " + mixer);
         activateAllActions();
         animate();
     } );
@@ -89,7 +92,7 @@
     function activateAllActions() 
     {
         actions.forEach( function ( action ) {
-
+            console.log("Animation = " + action); 
             action.play();
 
         } );
