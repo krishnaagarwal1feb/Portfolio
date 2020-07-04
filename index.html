@@ -23,7 +23,7 @@
 
     var idleAction;
     var tauntAction;
-    var Actions;
+    var actions;
 
     init();
 
@@ -73,7 +73,8 @@
             mixer = new THREE.AnimationMixer( model );
 
             tauntAction = mixer.clipAction( animations[ 0 ] );
-
+            console.log(tauntAction);
+            console.log("Update to latest");
             actions = [ tauntAction ];
 
             activateAllActions();
