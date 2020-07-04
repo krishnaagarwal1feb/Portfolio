@@ -17,7 +17,7 @@
     <script src="GLTFLoader.js"></script>
 
     <script>
-
+    
     var renderer,
     	scene,
     	camera,
@@ -32,6 +32,7 @@
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
 
+    
     //CAMERA
     camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000 );
 
@@ -50,8 +51,8 @@
     loader.load('newtest.glb', handle_load);
 
     var model;
-
-    var mixer;
+    var mixer = new THREE.AnimationMixer(); 
+    
     var actions;
     var action;
     
@@ -59,7 +60,7 @@
     var idleAction, bowAction, tauntAction, waveAction;
 
     function handle_load(gltf) {
-
+        console.log("In Loading");
         console.log(gltf);
         model = gltf.scene;
         model.children[0].material = new THREE.MeshLambertMaterial();
@@ -73,14 +74,14 @@
         bowAction = animations[0];
         tauntAction = animations[2];
         waveAction = animations[3];
-
+        action = mixer.clipAction(tauntAction);
+        action.SetLoop(THREE.once);
         actions = [idleAction, waveAction, bowAction, tauntAction];
     }
 
     document.addEventListener( 'mousedown', onDocumentMouseDown, false );
     function onDocumentMouseDown( event ) 
     {
-        action = idleAction;
         if ( action !== null ) 
         {
             console.log("Started playing = " + action);
@@ -96,6 +97,7 @@
 
     function render() 
     {
+        console.log("In render");
         delta += 0.1;
         if (model) 
         {
