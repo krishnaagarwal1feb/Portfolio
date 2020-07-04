@@ -50,7 +50,7 @@
     loader.load('AnimatedXBotTaunt.glb', handle_load);
 
     var mesh;
-    var mixer;
+   // var mixer;
     function handle_load(gltf) {
 
         console.log(gltf);
@@ -60,12 +60,27 @@
 		scene.add( mesh );
         mesh.position.z = -10;
 
-        mixer = new THREE.AnimationMixer( mesh.children[0] );
-        var clip = THREE.AnimationClip.CreateFromMorphTargetSequence('Taunt',geometry.morphTargets,30);
-        mixer.clipAction(clip).setDuration(1).play();
+       // mixer = new THREE.AnimationMixer( mesh.children[0] );
+       // var clip = THREE.AnimationClip.CreateFromMorphTargetSequence('Taunt',geometry.morphTargets,30);
+       // mixer.clipAction(clip).setDuration(1).play();
     }
+    
+    var mixer = new THREE.AnimationMixer( mesh );
+    var clips = mesh.animations;
 
-
+    function update () 
+    {
+	    mixer.update( deltaSeconds );
+    }
+    var clip = THREE.AnimationClip.findByName( clips, 'Taunt' );
+    var action = mixer.clipAction( clip );
+    action.play();
+    
+    clips.forEach( function ( clip ) 
+    {
+	    mixer.clipAction( clip ).play();
+    } );    
+    
     //RENDER LOOP
     render();
 
