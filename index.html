@@ -95,13 +95,14 @@
         } );
     }
 
+    var prevTime = Date.now();
     function animate()
     {
+        var time = Date.now();
         requestAnimationFrame(animate);
         var mixerUpdateDelta = clock.getDelta();
-        var mixerUpdateDelta = clock.getDelta();
+        mixer.update( (time - prevTime)*0.001 );
         renderer.render( scene, camera );
-
     }
 
     </script>
