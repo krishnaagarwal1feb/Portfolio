@@ -18,10 +18,10 @@
 
     <script>
     
-    var renderer,
-    	scene,
-    	camera,
-    	myCanvas = document.getElementById('myCanvas');
+    var renderer;
+    var	scene;
+    var	camera;
+    var	myCanvas = document.getElementById('myCanvas');
 
     //RENDERER
     renderer = new THREE.WebGLRenderer({
@@ -35,7 +35,6 @@
     
     //CAMERA
     camera = new THREE.PerspectiveCamera(35, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
     //SCENE
     scene = new THREE.Scene();
 
@@ -52,22 +51,18 @@
 
     var model;
     var mixer = new THREE.AnimationMixer(); 
-    
     var actions;
     var action;
-    
     var animations;
     var idleAction, bowAction, tauntAction, waveAction;
 
-    function handle_load(gltf) {
-        console.log("In Loading");
-        console.log(gltf);
+    function handle_load(gltf) 
+    {
         model = gltf.scene;
         model.children[0].material = new THREE.MeshLambertMaterial();
 		scene.add( model );
         model.position.z = -10;
 
-        console.log(gltf.animations);
         mixer = new THREE.AnimationMixer(model);
         animations = gltf.animations;
         idleAction = animations[1];
@@ -86,19 +81,20 @@
         {
             console.log("Started playing = " + action);
             action.stop();
+
             action.play();
         }
     }
     //RENDER LOOP
     render();
 
-    var delta = 0;
+    var delta = 0.01;
     var prevTime = Date.now();
 
     function render() 
     {
         console.log("In render");
-        delta += 0.1;
+        //delta += 0.1;
         if (model) 
         {
             model.rotation.y += 0.01;
